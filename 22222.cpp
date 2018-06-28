@@ -1,5 +1,5 @@
 #include<iostream>
-#include<string>
+#include<string.h>
 #include<fstream>
 #include<conio.h>
 #include<iomanip>
@@ -16,7 +16,7 @@ void add();
 float grsd(float v);
 
 struct zhigong
-{	char number[10];
+{   char number[10];
     char name[10];
     float post_wage;
     float pay_salary;
@@ -31,106 +31,127 @@ struct zhigong zggz[100];
 
 void read()
 {
-    ifstream DF_01("gx.dat",ios::in);
-    if(!DF_01)
-    {	
-        cout<<"文件打开失败！"<<endl;
-        abort();
+    FILE*Read=fopen("gx.dat","ab+");
+    if(Read)
+    {   
+        while(!feof(Read))
+        {
+            char A=fgetc(Read);
+			char a=EOF;
+            if(A!=a)
+            {
+                fscanf(Read,"%s%s%f%f%f%f%f%f%f",&zggz[n].number,&zggz[n].name,&zggz[n].post_wage,&zggz[n].pay_salary,
+                    &zggz[n].duty_allowance,&zggz[n].merit_pay,&zggz[n].gross_pay,&zggz[n].income_tax,&zggz[n].payroll);
+                n++;
+            }
+        }
+        fclose(Read);
     }
-    int i=0;
-    while(DF_01>>zggz[i].number)
+    else
     {
-		i++;
+        printf("\n文件打开失败！");
     }
-
-    n=i+1;
-    DF_01.close();
+    
 }
 
 void write()
 {
-    FILE *fp;
-    ofstream DF_05("gx.dat",ios::out);
-    if(n>0)
-    {	
-        cout<<"文件打开失败或者原文件不存在！"<<endl;
-        abort();
+    FILE*DF_05=fopen("gx.dat","wb");
+    if(DF_05)
+    {   
+         for(int i=0;i<n;i++)
+        {
+            fprintf(DF_05,"%-10s%-10s%-10f\t%-10f\t%-10f\t%-10f\t%-10f\t%-10f\t%-10f\n",zggz[i].number,zggz[i].name,zggz[i].post_wage,
+                zggz[i].pay_salary,zggz[i].duty_allowance,zggz[i].merit_pay,zggz[i].gross_pay,zggz[i].income_tax,zggz[i].payroll);
+        }
+        fclose(DF_05);
+        printf("\n文件保存成功！");
     }
-
-    for(int i=0;i<n;i++)
+    else
     {
-        fwrite(&zggz,sizeof(zggz),1,fp);
+        printf("\n文件打开失败！");
     }
-    DF_05.close();
-
-    cout<<"按任意键返回主菜单";
-    getch();
-    return;
+    printf("\n按任意键返回主菜单");
+    if(getch())
+    {   
+        system("cls");
+        return;
+    }
 }
 
 void find()
 {
     char gonghao[10];
-    int i=0;
-    cout<<"请输入查询的工号";
-    gets(gonghao);
-    for(i;i<n;i++)
-    {
-        if(strcmp(zggz[i].number,gonghao)==0)
+	printf("请输入查询的工号");
+    scanf("%s",gonghao);
+    for(int i=0;i<n;i++)
+    {	
+        if(strcmp(gonghao,zggz[i].number)==0)
         {
-            cout<<"------------------------------------该职工工资信息如下------------------------------------"<<endl;
-            cout<<"职工工号丨职工姓名丨岗位工资丨薪级工资丨职务津贴丨绩效工资丨应发工资丨个人所得税丨实发工资"<<endl;
-            cout<<zggz[i].number[10]<<zggz[i].name[10]<<zggz[i].post_wage<<zggz[i].pay_salary<<zggz[i].duty_allowance
-                <<zggz[i].merit_pay<<zggz[i].gross_pay<<zggz[i].income_tax<<zggz[i].payroll<<endl;
-        }
-        return;
+			printf("-------------------------------该职工工资信息如下------------------------------");
+			printf(	"丨职工工号:%-15s丨职工姓名:%-15s丨岗位工资:%-15f\n"
+					"丨薪级工资:%-15f丨职务津贴:%-15f丨绩效工资:%-15f\n"
+					"丨应发工资:%-15f丨个人所得税:%-13f丨实发工资:%-15f\n",
+				zggz[i].number, zggz[i].name, zggz[i].post_wage, 
+				zggz[i].pay_salary, zggz[i].duty_allowance, zggz[i].merit_pay, 
+				zggz[i].gross_pay, zggz[i].income_tax, zggz[i].payroll);
+			i=1;
+			break;
+			
+		}
     }
-    
-    cout<<"您所输入的职工工号有误或不存在！"<<endl;
-    cout<<"按任意键返回主菜单";
-    getch();
-    return;
-    
+	if(!i)
+	{
+    printf("您所输入的职工工号有误或不存在！");
+	}
+	printf("\n按任意键返回主菜单");
+	if(getch())
+	{   
+		system("cls");
+		return;
+	}
+	
 }
 
 void list()
 {
-	ofstream DF_05("gx.dat");
-    cout<<"-----------------------------------全体职工工资信息如下-----------------------------------"<<endl;
-	cout<<"职工工号丨职工姓名丨岗位工资丨薪级工资丨职务津贴丨绩效工资丨应发工资丨个人所得税丨实发工资"<<endl;
-    for(int i=0;i<=n;i++)
+    ofstream DF_05("gx.dat");
+    printf("------------------------------全体职工工资信息如下------------------------------\n");
+    for(int i=0;i<n;i++)
     {
-        
-        cout<<setw(8)<<zggz[i].number[10]
-			<<setw(8)<<zggz[i].name[10]
-			<<setw(8)<<zggz[i].post_wage
-			<<setw(8)<<zggz[i].pay_salary
-			<<setw(8)<<zggz[i].duty_allowance
-            <<setw(8)<<zggz[i].merit_pay
-			<<setw(8)<<zggz[i].gross_pay
-			<<setw(8)<<zggz[i].income_tax
-			<<setw(8)<<zggz[i].payroll<<endl;
-    }
+      	printf(	"丨职工工号:%-15s丨职工姓名:%-15s丨岗位工资:%-15f\n"
+				"丨薪级工资:%-15f丨职务津贴:%-15f丨绩效工资:%-15f\n"
+				"丨应发工资:%-15f丨个人所得税:%-13f丨实发工资:%-15f\n\n",
+				zggz[i].number, zggz[i].name, zggz[i].post_wage, 
+				zggz[i].pay_salary, zggz[i].duty_allowance, zggz[i].merit_pay, 
+				zggz[i].gross_pay, zggz[i].income_tax, zggz[i].payroll);
+	    }
 
-    cout<<"按任意键返回主菜单";
-    getch();
-    return;
+    printf("\n按任意键返回主菜单");
+    if(getch())
+    {   
+        system("cls");
+        return;
+    }
 }
 
 void modify()
 {
     char gonghao[10];
-    cout<<"请输入查询的工号";
-    gets(gonghao);
+    printf("请输入查询的工号");
+    scanf("%s",gonghao);
     for(int i=0;i<n;i++)
     {
         if(strcmp(zggz[i].number,gonghao)==0)
         {
-            cout<<"------------------------------------该职工工资信息如下------------------------------------"<<endl;
-            cout<<"职工工号丨职工姓名丨岗位工资丨薪级工资丨职务津贴丨绩效工资丨应发工资丨个人所得税丨实发工资"<<endl;
-            cout<<zggz[i].number[10]<<zggz[i].name[10]<<zggz[i].post_wage<<zggz[i].pay_salary<<zggz[i].duty_allowance
-                <<zggz[i].merit_pay<<zggz[i].gross_pay<<zggz[i].income_tax<<zggz[i].payroll<<endl;
-        }
+            printf("------------------------------------该职工工资信息如下------------------------------------");
+            printf(	"丨职工工号:%-15s丨职工姓名:%-15s丨岗位工资:%-15f\n"
+					"丨薪级工资:%-15f丨职务津贴:%-15f丨绩效工资:%-15f\n"
+					"丨应发工资:%-15f丨个人所得税:%-13f丨实发工资:%-15f\n",
+					zggz[i].number, zggz[i].name, zggz[i].post_wage, 
+					zggz[i].pay_salary, zggz[i].duty_allowance, zggz[i].merit_pay, 
+					zggz[i].gross_pay, zggz[i].income_tax, zggz[i].payroll);        
+		}
     }
     
     cout<<"请输入该职工新的岗位工资："<<endl;
@@ -150,30 +171,64 @@ void modify()
     zggz[i].income_tax=grsd(zggz[i].gross_pay);    //计算个人所得税
     zggz[i].payroll=zggz[i].gross_pay=zggz[i].income_tax;    //计算应发工资
     
-    cout<<"该职工的应发工资为："<<zggz[i].gross_pay<<endl;
-    cout<<"该职工的个人所得税为："<<zggz[i].income_tax<<endl;
-    cout<<"该职工的应发工资为："<<zggz[i].payroll<<endl;
+    printf("该职工的应发工资为：%-15f\n",zggz[i].gross_pay);
+    printf("该职工的个人所得税为：%-15f\n",zggz[i].income_tax);
+    printf("该职工的应发工资为：%-15f",zggz[i].payroll);
     
-    cout<<"按任意键返回主菜单";
-    getch();
-    return;
+    printf("\n按任意键返回主菜单");
+    if(getch())
+    {   
+        system("cls");
+        return;
+    }
 }
 
 void del()
 {
     char gonghao[10];
     cout<<"请输入要删除的职工号";
-    gets(gonghao);
+    scanf("%s",gonghao);
    
     for(int i=0;i<n;i++)
     {
         if(strcmp(zggz[i].number,gonghao)==0)
         {
-            cout<<"------------------------------------该职工工资信息如下------------------------------------"<<endl;
-            cout<<"职工工号丨职工姓名丨岗位工资丨薪级工资丨职务津贴丨绩效工资丨应发工资丨个人所得税丨实发工资"<<endl;
-            cout<<zggz[i].number[10]<<zggz[i].name[10]<<zggz[i].post_wage<<zggz[i].pay_salary<<zggz[i].duty_allowance
-                <<zggz[i].merit_pay<<zggz[i].gross_pay<<zggz[i].income_tax<<zggz[i].payroll<<endl;
-        }
+			printf("--------------------------------查到该职工工资信息如下--------------------------------\n");;
+            printf( "丨职工工号:%-15s丨职工姓名:%-15s丨岗位工资:%-15f\n"
+					"丨薪级工资:%-15f丨职务津贴:%-15f丨绩效工资:%-15f\n"
+					"丨应发工资:%-15f丨个人所得税:%-13f丨实发工资:%-15f\n",
+					zggz[i].number, zggz[i].name, zggz[i].post_wage, 
+					zggz[i].pay_salary, zggz[i].duty_allowance, zggz[i].merit_pay, 
+					zggz[i].gross_pay, zggz[i].income_tax, zggz[i].payroll);
+			printf("你真的要删除这个职工的工资信息？\n");
+			printf("是，请按1\t\t否，请按2\n");
+			char flg;
+			scanf("%d",flg);
+			if(flg)
+			{
+				for(int j=i;j<n-1;j++)
+				{
+					zggz[j]=zggz[j+1];
+				
+				}
+				strcpy(zggz[n-1].number, " "); 
+				strcpy(zggz[n-1].name, " "); 
+				zggz[n-1].post_wage=0; 
+				zggz[n-1].pay_salary=0;
+				zggz[n-1].duty_allowance=0; 
+				zggz[n-1].merit_pay=0;
+				zggz[n-1].gross_pay=0;
+				zggz[n-1].income_tax=0;
+				zggz[n-1].payroll=0;
+			}
+
+		}
+    }
+	printf("\n按任意键返回主菜单");
+    if(getch())
+    {   
+        system("cls");
+        return;
     }
     
 }
@@ -181,33 +236,27 @@ void del()
 void add()
 {
     n=n+1;
-    cout<<"请输入该职工的职工工号："<<endl;
-    cin>>zggz[n].number;
-    cout<<"\n请输入该职工的职工姓名："<<endl;
-    cin>>zggz[n].name;
-    cout<<"\n请输入该职工的岗位工资："<<endl;
-    cin>>zggz[n].post_wage;
-    cout<<"\n请输入该职工的薪级工资："<<endl;
-    cin>>zggz[n].pay_salary;
-    cout<<"\n请输入该职工的政务津贴："<<endl;
-    cin>>zggz[n].duty_allowance;
-    cout<<"\n请输入该职工的绩效工资："<<endl;
-    cin>>zggz[n].merit_pay;
-    
-    zggz[n].gross_pay=zggz[n].post_wage+zggz[n].pay_salary+zggz[n].duty_allowance+zggz[n].merit_pay;    //计算应发工资
-    zggz[n].income_tax=grsd(zggz[n].gross_pay);    //计算个人所得税
-    zggz[n].payroll=zggz[n].gross_pay=zggz[n].income_tax;    //计算应发工资
+    printf("请输入该职工的职工工号,职工姓名,岗位工资,薪级工资,政务津贴,绩效工资\n");
+    scanf("%s%s%f%f%f%f",&zggz[n-1].number,&zggz[n-1].name,&zggz[n-1].post_wage,&zggz[n-1].pay_salary,&zggz[n-1].duty_allowance,&zggz[n-1].merit_pay);
 
-	ofstream DF_03("gx.dat");
-	DF_03<<zggz[n].number[10]<<zggz[n].name[10]<<zggz[n].post_wage<<zggz[n].pay_salary<<zggz[n].duty_allowance
-                <<zggz[n].merit_pay<<zggz[n].gross_pay<<zggz[n].income_tax<<zggz[n].payroll;
+    zggz[n-1].gross_pay=zggz[n-1].post_wage + zggz[n-1].pay_salary + zggz[n-1].duty_allowance + zggz[n-1].merit_pay;    //计算应发工资
+    zggz[n-1].income_tax=grsd(zggz[n-1].gross_pay);    //计算个人所得税
+    zggz[n-1].payroll=zggz[n-1].gross_pay - zggz[n-1].income_tax;    //计算应发工资
 
-           cout<<"------------------------------------该职工工资信息如下------------------------------------"<<endl;
-            cout<<"职工工号丨职工姓名丨岗位工资丨薪级工资丨职务津贴丨绩效工资丨应发工资丨个人所得税丨实发工资"<<endl;
-            cout<<zggz[n].number[10]<<zggz[n].name[10]<<zggz[n].post_wage<<zggz[n].pay_salary<<zggz[n].duty_allowance
-                <<zggz[n].merit_pay<<zggz[n].gross_pay<<zggz[n].income_tax<<zggz[n].payroll<<endl;
+	printf(	"------------------------添加成功，这个职工的信息为：------------------------\n");
+	printf(	"丨职工工号:%-15s丨职工姓名:%-15s丨岗位工资:%-15f\n"
+			"丨薪级工资:%-15f丨职务津贴:%-15f丨绩效工资:%-15f\n"
+			"丨应发工资:%-15f丨个人所得税:%-13f丨实发工资:%-15f\n",
+			zggz[n-1].number,zggz[n-1].name,zggz[n-1].post_wage,
+			zggz[n-1].pay_salary,zggz[n-1].duty_allowance,zggz[n-1].merit_pay,
+			zggz[n-1].gross_pay,zggz[n-1].income_tax,zggz[n-1].payroll);
 
-
+    printf("\n按任意键返回主菜单");
+    if(getch())
+    {   
+        system("cls");
+        return;
+    }
 }
 
 float grsd(float v)
@@ -231,47 +280,52 @@ float grsd(float v)
     
     switch(n)
     {
-    case 1:y=y+x*0.05;
-    case 2:y=y+(x-500)*0.1;
-    case 3:y=y+(x-2000)*0.15;
-    case 4:y=y+(x-5000)*0.2;
-    case 5:y=y+(x-20000)*0.25;
-    case 6:y=y+(x-40000)*0.3;
-    case 7:y=y+(x-60000)*0.35;
-    case 8:y=y+(x-80000)*0.4;
-    case 9:y=y+(x-100000)*0.45;
+        case 8:y=y+(x-80000)*0.4;
+        case 7:y=y+(x-60000)*0.35;
+        case 6:y=y+(x-40000)*0.3;
+        case 5:y=y+(x-20000)*0.25;
+        case 4:y=y+(x-5000)*0.2;
+        case 3:y=y+(x-2000)*0.15;
+        case 2:y=y+(x-500)*0.1;
+        case 1:y=y+x*0.05;
     }
-    
+
     return y;
 }
 
 void main()
 {
-	read();
-    int flg;
-	cout<<n<<endl;
-    cout<<"┌─────────☆─欢迎使用职工工资管理系统─☆─────────┐"<<endl;
-    cout<<"├────────☆─────┤1、 查询├─────☆────────┤"<<endl;
-    cout<<"├───────☆──────┤2、 修改├──────☆───────┤"<<endl;
-    cout<<"├──────☆───────┤3、 添加├───────☆──────┤"<<endl;
-    cout<<"├─────☆────────┤4、 删除├────────☆─────┤"<<endl;
-    cout<<"├────☆─────────┤5、 保存├─────────☆────┤"<<endl;
-    cout<<"├───☆──────────┤6、 浏览├──────────☆───┤"<<endl;
-    cout<<"├──☆───────────┤7、 修改├───────────☆──┤"<<endl;
-    cout<<"├─☆─────────请输入一个数字(￣▽￣)~*─────────☆─┤"<<endl;
-    cout<<"└☆────────────────────────────────☆┘"<<endl;
-    cin>>flg;
 
-    switch(flg)
-    {
-    case 1:find();break;
-    case 2:modify();break;
-    case 3:add();break;
-    case 4:del();break;
-    case 5:write();break;
-    case 6:list();break;
-    case 7:return;
-    }
+	system("cls");
+    read();
+    int flg;
+	while(1)
+	{
+		cout<<n<<endl;
+		printf("┌─────────☆─欢迎使用职工工资管理系统─☆─────────┐\n");
+		printf("├────────☆─────┤1、 查询├─────☆────────┤\n");
+		printf("├───────☆──────┤2、 修改├──────☆───────┤\n");
+		printf("├──────☆───────┤3、 添加├───────☆──────┤\n");
+		printf("├─────☆────────┤4、 删除├────────☆─────┤\n");
+		printf("├────☆─────────┤5、 保存├─────────☆────┤\n");
+		printf("├───☆──────────┤6、 浏览├──────────☆───┤\n");
+		printf("├──☆───────────┤7、 退出├───────────☆──┤\n");
+		printf("├─☆─────────请输入一个数字(￣▽￣)~*─────────☆─┤\n");
+		printf("└☆────────────────────────────────☆┘\n");
+
+		cin>>flg;
+
+		switch(flg)
+		{
+		case 1:find();break;
+		case 2:modify();break;
+		case 3:add();break;
+		case 4:del();break;
+		case 5:write();break;
+		case 6:list();break;
+		case 7:return;
+		}
+	}
 
     return;
     
